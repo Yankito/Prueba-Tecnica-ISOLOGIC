@@ -8,28 +8,28 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 // El decorador @Controller('tasks') define que todas las rutas en esta clase
 // comenzarán con '/tasks'.
 @Controller('tasks')
-// El decorador @UseGuards(AuthGuard('jwt')) protege todas las rutas del controlador.
-// Cada solicitud debe incluir un token JWT válido para ser procesada.
+// El decorador @UseGuards(AuthGuard('jwt')) protege todas las rutas del controlador
+// Cada solicitud debe incluir un token JWT válido para ser procesada
 @UseGuards(AuthGuard('jwt'))
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
-  // Endpoint para manejar las solicitudes GET a '/tasks'.
-  // Esta ruta devuelve todas las tareas.
+  // Endpoint para manejar las solicitudes GET a '/tasks'
+  // Esta ruta devuelve todas las tareas
   @Get()
   async findAll(@Request() req): Promise<Task[]> {
     return this.tasksService.findAll(req.user.id);
   }
 
-  // Endpoint para las solicitudes POST a '/tasks'.
-  // Esta ruta se usa para crear una nueva tarea.
+  // Endpoint para las solicitudes POST a '/tasks'
+  // Esta ruta se usa para crear una nueva tarea
   @Post()
   async create(@Body() createTaskDto: CreateTaskDto, @Request() req): Promise<Task> {
     return this.tasksService.create(createTaskDto, req.user.id);
   }
 
-  // Endpoint para las solicitudes PUT a '/tasks/:id'.
-  // Se usa para actualizar una tarea específica, identificada por su ID.
+  // Endpoint para las solicitudes PUT a '/tasks/:id'
+  // Se usa para actualizar una tarea específica por su ID
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -43,8 +43,8 @@ export class TasksController {
     return task;
   }
 
-  // Endpoint para las solicitudes DELETE a '/tasks/:id'.
-  // Se usa para eliminar una tarea específica por su ID.
+  // Endpoint para las solicitudes DELETE a '/tasks/:id'
+  // Se usa para eliminar una tarea específica por su ID
   @Delete(':id')
   async remove(@Param('id') id: number, @Request() req): Promise<void> {
     await this.tasksService.remove(id, req.user.id);

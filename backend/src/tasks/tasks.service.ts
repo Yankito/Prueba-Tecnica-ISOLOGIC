@@ -28,9 +28,9 @@ export class TasksService {
 
   // Actualiza una tarea existente por su ID y el del usuario
   async update(id: number, updateTaskDto: UpdateTaskDto, userId: number): Promise<Task> {
-    // Busca la tarea por su ID.
+    // Busca la tarea por su ID
     const task = await this.tasksRepository.findOne({ where: { id, user: { id: userId } } });
-    // Si la tarea no se encuentra, lanza una excepción.
+    // Si la tarea no se encuentra, lanza una excepción
     if (!task) {
       throw new NotFoundException('Tarea no encontrada o no te pertenece');
     }

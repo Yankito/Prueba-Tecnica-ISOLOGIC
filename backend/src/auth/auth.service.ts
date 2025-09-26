@@ -14,25 +14,47 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  // Método para validar las credenciales de un usuario.
+  async onModuleInit() {
+    // Verificar si ya existe un usuario admin
+    const adminUser = await this.usersRepository.findOne({ where: { username: 'admin' } });
+
+    if (!adminUser) {
+      // Si no existe, crear y guardar el usuario
+      console.log('Creando usuario administrador por defecto...');
+
+      const defaultPassword = '1234';
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(defaultPassword, salt);
+
+      const newAdmin = this.usersRepository.create({
+        username: 'admin',
+        password: hashedPassword,
+      });
+
+      await this.usersRepository.save(newAdmin);
+      console.log('Usuario admin creado exitosamente.');
+    }
+  }
+
+  // Método para validar las credenciales de un usuario
   async validateUser(username: string, pass: string): Promise<any> {
-    // Busca al usuario por su nombre de usuario en la base de datos.
+    // Busca al usuario por su nombre de usuario en la base de datos
     const user = await this.usersRepository.findOne({ where: { username } });
 
-    // Si el usuario existe y la contraseña proporcionada coincide con la hasheada, se considera que el usuario es válido.
+    // Si el usuario existe y la contraseña proporcionada coincide con la hasheada, se considera que el usuario es válido
     if (user && (await bcrypt.compare(pass, user.password))) {
       const { password, ...result } = user;
-      // Retorna el objeto del usuario sin la contraseña hasheada.
+      // Retorna el objeto del usuario sin la contraseña hasheada
       return result;
     }
     return null;
   }
 
-  // Método para generar un token JWT para un usuario válido.
+  // Método para generar un token JWT para un usuario válido
   login(user: any) {
     const payload = { username: user.username, sub: user.id };
     return {
-      // Firma el payload para crear el token y lo devuelve.
+      // Firma el payload para crear el token y lo devuelve
       access_token: this.jwtService.sign(payload),
     };
   }
@@ -53,7 +75,7 @@ export class AuthService {
     const newUser = this.usersRepository.create({ username, password: hashedPassword });
     await this.usersRepository.save(newUser);
 
-    // Genera un token para el usuario recién registrado.
+    // Genera un token para el usuario recién registrado
     const payload = { username: newUser.username, sub: newUser.id };
     return {
       message: 'Usuario registrado exitosamente',

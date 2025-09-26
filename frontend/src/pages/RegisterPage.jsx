@@ -62,7 +62,7 @@ export default function RegisterPage() {
                 required
               />
             </div>
-            <div className="flex items-baseline justify-end mt-4">
+            <div className="flex items-baseline justify-center mt-4">
               <button 
                 type="submit"
                 className="px-6 py-2 text-white bg-isologic-green rounded-lg hover:bg-green-700 focus:outline-none focus:ring-1 focus:ring-isologic-green"
@@ -75,12 +75,14 @@ export default function RegisterPage() {
         
         <p className="mt-4 text-center text-gray-600 text-sm">
           ¿Ya tienes una cuenta? 
+          <div>
             <Link 
                 to="/" 
                 className="text-isologic-blue hover:underline"
             >
                 Inicia sesión
             </Link>
+          </div>
         </p>
       </div>
     </div>

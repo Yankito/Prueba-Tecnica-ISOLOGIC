@@ -13,20 +13,25 @@ export default function TasksDashboardPage() {
   const [tasks, setTasks] = useState([]);
   const [sortKey, setSortKey] = useState('dueDate');
   const [sortDirection, setSortDirection] = useState('asc');
+  const [isLoading, setIsLoading] = useState(true);
+
   const navigate = useNavigate();
   const username = authService.getCurrentUsername(); 
 
   // Función para obtener tareas
   const fetchTasks = useCallback(async () => {
+    setIsLoading(true); 
     try {
       const data = await taskService.getTasks();
       setTasks(data);
     } catch (error) {
       console.error('Error al obtener tareas:', error);
-      // Asume que si falla, el token expiró o es inválido.
+      // Asume que si falla, el token expiró o es inválido
       showAlert('error', 'Sesión Expirada', 'Tu sesión ha terminado. Por favor, inicia sesión de nuevo.');
       authService.logout();
       navigate('/');
+    } finally {
+      setIsLoading(false);
     }
   }, [navigate]);
 
@@ -38,25 +43,31 @@ export default function TasksDashboardPage() {
     fetchTasks();
   }, [navigate, fetchTasks]);
 
-  // Manejadores de Eventos del Componente Principal
   
   const handleCreateTask = async (title, description, dueDate) => {
+    setIsLoading(true);
     try {
-      await taskService.createTask(title, description, dueDate);
-      fetchTasks();
+      const newTask = await taskService.createTask(title, description, dueDate);
+      setTasks(prevTasks => [newTask, ...prevTasks]); 
       showAlert('success', 'Tarea Creada', `La tarea "${title}" ha sido añadida con éxito.`);
     } catch (error) {
       showAlert('error', 'Error al crear', 'No se pudo crear la tarea. Intenta de nuevo.');
+    } finally {
+      setIsLoading(false);
     }
+
   };
 
   const handleUpdateTask = async (id, isCompleted) => {
     try {
       await taskService.updateTask(id, !isCompleted);
-      fetchTasks();
-      
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task.id === id ? { ...task, isCompleted: !isCompleted } : task
+        )
+      );
+
       const action = isCompleted ? 'deshecha' : 'completada';
-      
       showToast('success', `Tarea marcada como ${action}.`);
         
     } catch (error) {
@@ -67,7 +78,7 @@ export default function TasksDashboardPage() {
   const handleDeleteTask = async (id) => {
     try {
       await taskService.deleteTask(id);
-      fetchTasks();
+      setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
       showAlert('success', 'Tarea Eliminada', 'La tarea se eliminó correctamente.');
     } catch (error) {
       showAlert('error', 'Error al eliminar', 'No se pudo eliminar la tarea. Podría no existir o no te pertenece.');
@@ -164,6 +175,7 @@ export default function TasksDashboardPage() {
           <button 
             onClick={() => handleSort('title')} 
             className="flex items-center text-isologic-blue hover:text-isologic-darkgray text-sm font-medium transition"
+            disabled={isLoading}
           >
             Título <SortIcon keyName="title" />
           </button>
@@ -171,6 +183,7 @@ export default function TasksDashboardPage() {
           <button 
             onClick={() => handleSort('dueDate')} 
             className="flex items-center text-isologic-blue hover:text-isologic-darkgray text-sm font-medium transition"
+            disabled={isLoading}
           >
             Fecha Límite <SortIcon keyName="dueDate" />
           </button>
@@ -178,6 +191,7 @@ export default function TasksDashboardPage() {
           <button 
             onClick={() => handleSort('isCompleted')} 
             className="flex items-center text-isologic-blue hover:text-isologic-darkgray text-sm font-medium transition"
+            disabled={isLoading}
           >
             Estado <SortIcon keyName="isCompleted" />
           </button>
@@ -185,7 +199,15 @@ export default function TasksDashboardPage() {
         
         {/* Lista de Tareas */}
         <ul className="bg-white rounded-b-lg shadow-md divide-y divide-gray-200 mt-0">
-          {sortedTasks.length > 0 ? (
+          {isLoading ? ( // <-- IMPLEMENTACIÓN DEL LOADING
+            <li className="p-4 text-center text-isologic-darkgray flex justify-center items-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-isologic-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Cargando tareas...
+            </li>
+          ) : sortedTasks.length > 0 ? (
             sortedTasks.map((task) => (
               <TaskItem 
                 key={task.id} 

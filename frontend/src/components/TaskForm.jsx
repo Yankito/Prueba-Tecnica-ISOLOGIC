@@ -11,7 +11,7 @@ export default function TaskForm({ onCreate }) {
     return new Date().toISOString().split('T')[0];
   };
   
-  // Obtenemos la fecha mínima permitida (hoy)
+  // Se obtiene la fecha mínima permitida (hoy)
   const today = getTodayDate();
 
   const handleSubmit = (e) => {

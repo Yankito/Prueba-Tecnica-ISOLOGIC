@@ -8,7 +8,7 @@ import { FiAlertTriangle } from 'react-icons/fi';
 
 // Recibe la tarea y los manejadores de eventos como props
 export default function TaskItem({ task, onUpdate, onDelete }) {
-  const { id, title, description, dueDate, isCompleted } = task; // Desestructura los nuevos campos
+  const { id, title, description, dueDate, isCompleted } = task;
 
   const isDueToday = () => {
     if (!dueDate || isCompleted) return false;
@@ -79,8 +79,8 @@ export default function TaskItem({ task, onUpdate, onDelete }) {
           } text-white`}
         >
           {isCompleted 
-            ? <IoMdUndo className="w-4 h-4 mr-1" />  // Icono Deshacer
-            : <FaCheckCircle className="w-4 h-4 mr-1" /> // Icono Completar
+            ? <IoMdUndo className="w-4 h-4 mr-1" />
+            : <FaCheckCircle className="w-4 h-4 mr-1" />
           }
           {isCompleted ? 'Deshacer' : 'Completar'}
         </button>

@@ -25,7 +25,6 @@ export default function CollapsibleTaskForm({ onCreate }) {
         className="w-full p-4 flex justify-between items-center text-isologic-darkgray font-semibold hover:bg-gray-50 transition duration-150"
       >
         <span className="flex items-center text-lg">
-          {/* Icono Principal (Suma o Flecha Arriba) */}
           {isOpen 
                 ? <IoChevronUp className="w-5 h-5 mr-2 text-isologic-blue" /> 
                 : <FaPlus className="w-4 h-4 mr-2 text-isologic-green" /> 
@@ -33,7 +32,6 @@ export default function CollapsibleTaskForm({ onCreate }) {
           {isOpen ? 'Ocultar Formulario' : 'Añadir Nueva Tarea'}
         </span>
         
-        {/* Icono Indicador de Estado (Flecha Arriba o Abajo) */}
         {isOpen ? <IoChevronUp className="w-6 h-6 text-gray-500" /> : <IoChevronDown className="w-6 h-6 text-gray-500" />}
       </button>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import taskService from '../services/taskService';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
@@ -7,13 +7,16 @@ import { showAlert, showToast } from '../utils/alertUtils';
 import CollapsibleTaskForm from '../components/CollapsibleTaskForm'; 
 
 import { MdLogout } from 'react-icons/md'
+import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa'; 
 
 export default function TasksDashboardPage() {
   const [tasks, setTasks] = useState([]);
+  const [sortKey, setSortKey] = useState('dueDate');
+  const [sortDirection, setSortDirection] = useState('asc');
   const navigate = useNavigate();
   const username = authService.getCurrentUsername(); 
 
-  // Función para obtener tareas (usamos useCallback para eficiencia con useEffect)
+  // Función para obtener tareas
   const fetchTasks = useCallback(async () => {
     try {
       const data = await taskService.getTasks();
@@ -43,7 +46,6 @@ export default function TasksDashboardPage() {
       fetchTasks();
       showAlert('success', 'Tarea Creada', `La tarea "${title}" ha sido añadida con éxito.`);
     } catch (error) {
-      // Muestra alerta si falla la creación (ej: error de servidor)
       showAlert('error', 'Error al crear', 'No se pudo crear la tarea. Intenta de nuevo.');
     }
   };
@@ -60,7 +62,7 @@ export default function TasksDashboardPage() {
     } catch (error) {
       showAlert('error', 'Error al actualizar', 'No se pudo actualizar la tarea. Verifica tu conexión.');
     }
-    };
+  };
 
   const handleDeleteTask = async (id) => {
     try {
@@ -77,43 +79,126 @@ export default function TasksDashboardPage() {
     navigate('/');
   };
 
-return (
-  <div className="min-h-screen bg-gray-100">
-    <header className="bg-isologic-blue text-white p-4 shadow-md">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="flex flex-col">
-          <h1 className="text-3xl font-bold">Mis Tareas</h1>
-          {username && <p className="text-sm text-gray-300">Usuario: {username}</p>}
+  const handleSort = (key) => {
+    if (sortKey === key) {
+      // Si es la misma clave, cambia la dirección
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Si es una nueva clave, establece esa clave y dirección ascendente por defecto
+      setSortKey(key);
+      setSortDirection('asc');
+    }
+  };
+  
+  // Función principal que clasifica las tareas
+  const sortedTasks = useMemo(() => {
+    const sorted = [...tasks]; 
+
+    sorted.sort((a, b) => {
+      let comparison = 0;
+      let aValue, bValue;
+
+      switch (sortKey) {
+        case 'title':
+          aValue = a.title.toLowerCase();
+          bValue = b.title.toLowerCase();
+          break;
+        case 'isCompleted':
+          aValue = a.isCompleted ? 1 : 0;
+          bValue = b.isCompleted ? 1 : 0;
+          break;
+        case 'dueDate':
+        default:
+          aValue = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+          bValue = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+          break;
+      }
+
+      if (aValue > bValue) {
+        comparison = 1;
+      } else if (aValue < bValue) {
+        comparison = -1;
+      }
+      // Aplica la dirección
+      return sortDirection === 'desc' ? comparison * -1 : comparison;
+    });
+
+    return sorted;
+  }, [tasks, sortKey, sortDirection]);
+
+  const SortIcon = ({ keyName }) => {
+    if (sortKey !== keyName) {
+      return <FaSort className="ml-1 w-3 h-3 text-gray-400" />;
+    }
+    if (sortDirection === 'asc') {
+      return <FaSortUp className="ml-1 w-3 h-3 text-isologic-darkgray" />;
+    }
+    return <FaSortDown className="ml-1 w-3 h-3 text-isologic-darkgray" />;
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <header className="bg-isologic-blue text-white p-4 shadow-md">
+        <div className="container mx-auto flex justify-between items-center">
+          <div className="flex flex-col">
+            <h1 className="text-3xl font-bold">Mis Tareas</h1>
+            {username && <p className="text-sm text-gray-300">Usuario: {username}</p>}
+          </div>
+          <button
+            onClick={handleLogout}
+            className="bg-error text-white px-4 py-2 rounded hover:bg-red-700 flex items-center" 
+          >
+            <MdLogout className="w-5 h-5 mr-2" />
+            Cerrar Sesión
+          </button>
         </div>
-        <button
-          onClick={handleLogout}
-          className="bg-error text-white px-4 py-2 rounded hover:bg-red-700 flex items-center" 
-        >
-          <MdLogout className="w-5 h-5 mr-2" />
-          Cerrar Sesión
-        </button>
-      </div>
-    </header>
-    
-    <main className="container mx-auto p-4 mt-8">
-      <CollapsibleTaskForm onCreate={handleCreateTask} />
+      </header>
       
-      {/* Lista de Tareas */}
-      <ul className="bg-white rounded-lg shadow-md divide-y divide-gray-200">
-        {tasks.length > 0 ? (
-          tasks.map((task) => (
-          <TaskItem 
-            key={task.id} 
-            task={task}
-            onUpdate={handleUpdateTask} 
-            onDelete={handleDeleteTask}
-          />
-          ))
-        ) : (
-          <li className="p-4 text-center text-gray-500">No hay tareas. ¡Añade una!</li>
-        )}
-      </ul>
-    </main>
-  </div>
- );
+      <main className="container mx-auto p-4 mt-8">
+        <CollapsibleTaskForm onCreate={handleCreateTask} />
+        
+        {/* Botones de ordenamiento */}
+        <div className="bg-white p-4 rounded-t-lg shadow-md mb-0 flex space-x-4 border-b border-gray-200">
+          <span className="text-sm font-semibold text-isologic-darkgray mr-2">Ordenar por:</span>
+          
+          <button 
+            onClick={() => handleSort('title')} 
+            className="flex items-center text-isologic-blue hover:text-isologic-darkgray text-sm font-medium transition"
+          >
+            Título <SortIcon keyName="title" />
+          </button>
+
+          <button 
+            onClick={() => handleSort('dueDate')} 
+            className="flex items-center text-isologic-blue hover:text-isologic-darkgray text-sm font-medium transition"
+          >
+            Fecha Límite <SortIcon keyName="dueDate" />
+          </button>
+
+          <button 
+            onClick={() => handleSort('isCompleted')} 
+            className="flex items-center text-isologic-blue hover:text-isologic-darkgray text-sm font-medium transition"
+          >
+            Estado <SortIcon keyName="isCompleted" />
+          </button>
+        </div>
+        
+        {/* Lista de Tareas */}
+        <ul className="bg-white rounded-b-lg shadow-md divide-y divide-gray-200 mt-0">
+          {sortedTasks.length > 0 ? (
+            sortedTasks.map((task) => (
+              <TaskItem 
+                key={task.id} 
+                task={task}
+                onUpdate={handleUpdateTask} 
+                onDelete={handleDeleteTask}
+              />
+            ))
+          ) : (
+            <li className="p-4 text-center text-gray-500">No hay tareas. ¡Añade una!</li>
+          )}
+        </ul>
+      </main>
+    </div>
+  );
 }

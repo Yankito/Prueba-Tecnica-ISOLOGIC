@@ -1,7 +1,7 @@
 import Swal from 'sweetalert2';
 
 const isologicColors = {
-  green: '#66b840',
+  green: '#73a540',
   error: '#dc2626',
 };
 
@@ -9,7 +9,6 @@ export const showAlert = (icon, title, text) => {
   let iconColor;
   let customClass = {};
 
-  // Determina el color del ícono y botones según el tipo de alerta
   switch (icon) {
     case 'success':
       iconColor = isologicColors.green;
@@ -66,18 +65,15 @@ export const showValidationAlert = (title, text, type = 'warning') => {
 
 export const showToast = (icon, title) => {
     let iconColor;
-    let customBgClass;
 
     switch (icon) {
         case 'success':
             iconColor = isologicColors.green;
-            customBgClass = 'bg-isologic-green';
             break;
         case 'info':
         case 'warning':
         default:
             iconColor = isologicColors.blue;
-            customBgClass = 'bg-isologic-blue';
             break;
     }
 

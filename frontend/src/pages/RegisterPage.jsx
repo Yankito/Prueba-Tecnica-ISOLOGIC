@@ -30,7 +30,6 @@ export default function RegisterPage() {
         <h3 className="text-2xl font-bold text-center text-isologic-darkgray">
             Crear Cuenta
         </h3>
-        {/* Mensajes de error usan la clase 'text-error' */}
         {error && <p className="text-error text-sm mt-2">{error}</p>}
         
         <form onSubmit={handleRegister}>

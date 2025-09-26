@@ -1,10 +1,10 @@
-// src/services/authService.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/auth/';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'; 
+const USERS_API_URL = API_BASE_URL + '/auth'; // La ruta de autenticación es /auth
 
 const login = async (username, password) => {
-  const response = await axios.post(API_URL + 'login', { username, password });
+  const response = await axios.post(USERS_API_URL + '/login', { username, password });
   if (response.data.access_token) {
     localStorage.setItem('access_token', response.data.access_token);
     localStorage.setItem('username', username);
@@ -18,7 +18,7 @@ const logout = () => {
 };
 
 const register = async (username, password) => {
-  const response = await axios.post(API_URL + 'register', { username, password });
+  const response = await axios.post(USERS_API_URL + '/register', { username, password });
   if (response.data.access_token) {
     localStorage.setItem('access_token', response.data.access_token);
     localStorage.setItem('username', username);

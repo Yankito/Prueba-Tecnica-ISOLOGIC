@@ -34,25 +34,19 @@ npm install
 Crea un archivo llamado .env en la raíz de la carpeta backend/ y configura las credenciales de tu base de datos y la clave de seguridad.
 
 ```env
-# ==================================
 # CONFIGURACIÓN DE BASE DE DATOS (PostgreSQL)
-# ==================================
 DB_HOST=localhost
 DB_PORT=5432
 DB_USERNAME=postgres
 DB_PASSWORD=password
 DB_DATABASE=isologic_db
 
-# ==================================
 # CONFIGURACIÓN DE SEGURIDAD
-# ==================================
 JWT_SECRET=clave_secreta
 PORT=3000
 
-# ==================================
 # CONFIGURACIÓN DE CORS
-# ==================================
-# Debe coincidir con la URL de tu frontend de React
+# Debe coincidir con la URL del frontend de React
 FRONTEND_URL=http://localhost:5173
 ```
 
@@ -61,7 +55,7 @@ FRONTEND_URL=http://localhost:5173
 El proyecto está configurado para la **sincronización automática** de TypeORM (`synchronize: true`).
 
 - **Método Automático (Recomendado):** Al ejecutar el servidor por primera vez (`npm run start:dev`), las tablas `user` y `task` serán creadas automáticamente en la base de datos configurada.
-- **Método Manual (Opcional):** El *script* SQL para la creación manual se encuentra en la carpeta **`base de datos/`**.
+- **Método Manual (Opcional):** El script SQL para la creación manual se encuentra en la carpeta **`base de datos/`**.
 
 ### 2.4. Ejecución del Servidor
 Ejecuta el servidor en modo desarrollo:

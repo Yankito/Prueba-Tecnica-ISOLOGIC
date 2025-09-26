@@ -1,13 +1,103 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import "tailwindcss";
+
+/* 🎨 Variables CSS globales de ISOLOGIC */
+:root {
+  /* Colores Principales de la Marca */
+  --color-isologic-blue: #2b4d98;
+  /* Azul oscuro (Primario, Header) */
+  --color-isologic-green: #73a540;
+  /* Verde brillante (Acento, Botones de éxito) */
+  --color-isologic-purple: #s7f4098;
+  /* Morado (Acento secundario, Botones de Deshacer) */
+  --color-isologic-darkgray: #333333;
+  /* Gris oscuro (Texto principal) */
+
+  /* Colores Funcionales */
+  --color-light: #f4f9f9;
+  /* Color suave para fondos o elementos neutros */
+  --color-error: #dc2626;
+  /* Rojo estándar de Tailwind (Alerta/Eliminar) */
+   --color-highlight: #ede01b;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* 🚀 Clases utilitarias personalizadas de ISOLOGIC */
+@layer utilities {
+  /* Clases de Fondo (background) */
+  .bg-isologic-blue {
+    background-color: var(--color-isologic-blue);
+  }
+
+  .bg-isologic-green {
+    background-color: var(--color-isologic-green);
+  }
+
+  .bg-isologic-purple {
+    background-color: var(--color-isologic-purple);
+  }
+
+  .bg-isologic-darkgray {
+    background-color: var(--color-isologic-darkgray);
+  }
+
+  .bg-light {
+    background-color: var(--color-light);
+  }
+
+  .bg-error {
+    background-color: var(--color-error);
+  }
+
+  .bg-highlight {
+    background-color: var(--color-highlight);
+  }
+
+  /* Clases de Texto (color) */
+  .text-isologic-blue {
+    color: var(--color-isologic-blue);
+  }
+
+  .text-isologic-green {
+    color: var(--color-isologic-green);
+  }
+
+  .text-isologic-purple {
+    color: var(--color-isologic-purple);
+  }
+
+  .text-isologic-darkgray {
+    color: var(--color-isologic-darkgray);
+  }
+
+  .text-light {
+    color: var(--color-light);
+  }
+
+  .text-error {
+    color: var(--color-error);
+  }
+
+  .text-highlight {
+    color: var(--color-highlight);
+  }  
+
+  /* Clases de Hover */
+  .hover\:bg-isologic-blue:hover {
+    background-color: var(--color-isologic-blue);
+  }
+
+  .hover\:bg-isologic-green:hover {
+    background-color: var(--color-isologic-green);
+  }
+
+  .hover\:bg-isologic-purple:hover {
+    background-color: var(--color-isologic-purple);
+  }
+
+  .hover\:bg-highlight:hover {
+    background-color: var(--color-highlight);
+  }
+  
+  .hover\:text-highlight:hover {
+    color: var(--color-highlight);
+  }
 }

@@ -1,7 +1,15 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsDateString } from 'class-validator';
 
 export class CreateTaskDto {
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   title: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsDateString() // Valida que sea un formato de fecha válido
+  dueDate?: string;
 }

@@ -14,7 +14,7 @@ export class User {
 
   // Columna para guardar la contraseña hasheada.
   @Column()
-  passwordHash: string;
+  password: string;
 
   // Define la relación de unoa muchos, un usuario tiene muchas tareas.
   @OneToMany(() => Task, (task) => task.user)

@@ -12,8 +12,15 @@ export class Task {
   @Column()
   title: string;
 
+  // Columna para descripción
+  @Column({ type: 'text', nullable: true })
+  description: string;
+
+  //Columna para fecha límite
+  @Column({ type: 'timestamp', nullable: true })
+  dueDate: Date;
+
   // Columna para el estado de la tarea (completada o no).
-  // 'default: false' establece el valor por defecto en 'false'.
   @Column({ default: false })
   isCompleted: boolean;
 

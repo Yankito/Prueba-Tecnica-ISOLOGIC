@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, NotFoundException, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TasksService } from './tasks.service';
 import { Task } from './task.entity';
@@ -17,15 +17,15 @@ export class TasksController {
   // Endpoint para manejar las solicitudes GET a '/tasks'.
   // Esta ruta devuelve todas las tareas.
   @Get()
-  async findAll(): Promise<Task[]> {
-    return this.tasksService.findAll();
+  async findAll(@Request() req): Promise<Task[]> {
+    return this.tasksService.findAll(req.user.id);
   }
 
   // Endpoint para las solicitudes POST a '/tasks'.
   // Esta ruta se usa para crear una nueva tarea.
   @Post()
-  async create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.tasksService.create(createTaskDto);
+  async create(@Body() createTaskDto: CreateTaskDto, @Request() req): Promise<Task> {
+    return this.tasksService.create(createTaskDto, req.user.id);
   }
 
   // Endpoint para las solicitudes PUT a '/tasks/:id'.
@@ -34,11 +34,11 @@ export class TasksController {
   async update(
     @Param('id') id: number,
     @Body() updateTaskDto: UpdateTaskDto,
+    @Request() req,
   ): Promise<Task> {
-    const task = await this.tasksService.update(id, updateTaskDto);
-    // Si el servicio no encuentra la tarea, se lanza una excepción 404 Not Found.
+    const task = await this.tasksService.update(id, updateTaskDto, req.user.id);
     if (!task) {
-      throw new NotFoundException('Tarea no encontrada');
+      throw new NotFoundException('Tarea no encontrada o no te pertenece');
     }
     return task;
   }
@@ -46,7 +46,7 @@ export class TasksController {
   // Endpoint para las solicitudes DELETE a '/tasks/:id'.
   // Se usa para eliminar una tarea específica por su ID.
   @Delete(':id')
-  async remove(@Param('id') id: number): Promise<void> {
-    return this.tasksService.remove(id);
+  async remove(@Param('id') id: number, @Request() req): Promise<void> {
+    await this.tasksService.remove(id, req.user.id);
   }
 }

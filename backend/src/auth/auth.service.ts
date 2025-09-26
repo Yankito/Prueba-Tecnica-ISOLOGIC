@@ -1,3 +1,4 @@
+// src/auth/auth.service.ts
 import { Injectable, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,8 +20,8 @@ export class AuthService {
     const user = await this.usersRepository.findOne({ where: { username } });
 
     // Si el usuario existe y la contraseña proporcionada coincide con la hasheada, se considera que el usuario es válido.
-    if (user && (await bcrypt.compare(pass, user.passwordHash))) {
-      const { passwordHash, ...result } = user;
+    if (user && (await bcrypt.compare(pass, user.password))) {
+      const { password, ...result } = user;
       // Retorna el objeto del usuario sin la contraseña hasheada.
       return result;
     }
@@ -46,10 +47,10 @@ export class AuthService {
 
     // Hashear la contraseña por seguridad
     const salt = await bcrypt.genSalt();
-    const passwordHash = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // Crear y guardar el nuevo usuario
-    const newUser = this.usersRepository.create({ username, passwordHash });
+    const newUser = this.usersRepository.create({ username, password: hashedPassword });
     await this.usersRepository.save(newUser);
 
     // Genera un token para el usuario recién registrado.

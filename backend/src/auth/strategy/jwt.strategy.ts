@@ -22,6 +22,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   // Se llama automáticamente cuando se recibe un token válido.
   validate(payload: any) {
     // Retorna un objeto con los datos del usuario.
-    return { userId: payload.sub, username: payload.username };
+    return {  id: payload.sub, username: payload.username };
   }
 }
